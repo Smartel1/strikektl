@@ -1,0 +1,52 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    url: ${DB_URL}
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+
+log:
+  level:
+    ru: debug
+
+server:
+  port: 8000
+
+firebase:
+  auth_stub: false
+  credentials:
+
+push:
+  enabled: true
+  topics:
+    admin: admin_test
+    news:
+      ru: news_ru_test
+      en: news_en_test
+      es: news_es_test
+      de: news_de_test
+    events:
+      ru: events_ru_test
+      en: events_en_test
+      es: events_es_test
+      de: events_de_test
+
+publications:
+  telegram:
+    chat_id:
+    bot_id:
+    bot_token:
+  vk:
+    group_id:
+    access_token:
+  ok:
+    access_token:
+    app_secret:
+    app_key:
+    gid:
+
+site-url: https://www.zabastcom.org/
