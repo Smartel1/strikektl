@@ -1,7 +1,7 @@
 package ru.smartel.strike.service.client_version
 
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
-import ru.smartel.strike.configuration.properties.VkProperties
 import ru.smartel.strike.dto.ListWrapperDto
 import ru.smartel.strike.dto.request.client_version.ClientVersionCreateRequestDto
 import ru.smartel.strike.dto.request.client_version.ClientVersionGetNewRequestDto
@@ -16,8 +16,7 @@ import javax.persistence.EntityNotFoundException
 @Service
 class ClientVersionService(
     private val repository: ClientVersionRepository,
-    private val dtoValidator: ClientVersionDtoValidator,
-    private val vkProperties: VkProperties
+    private val dtoValidator: ClientVersionDtoValidator
 ) {
     fun getNewVersions(request: ClientVersionGetNewRequestDto, locale: Locale): ListWrapperDto<ClientVersionDto> {
         dtoValidator.validateListRequestDto(request)
@@ -30,7 +29,7 @@ class ClientVersionService(
         return ListWrapperDto(newVersions.map { ClientVersionDto(it, locale) })
     }
 
-    //    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     fun create(request: ClientVersionCreateRequestDto, locale: Locale): ClientVersionDto {
         dtoValidator.validateStoreDto(request)
         repository.getByVersionAndClientId(request.version!!, request.clientId!!)?.run {
@@ -49,7 +48,7 @@ class ClientVersionService(
             .also { return ClientVersionDto(it, locale) }
     }
 
-    //    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     fun delete(id: Long) {
         repository.findById(id).ifPresentOrElse({ repository.delete(it) }) {
             throw EntityNotFoundException("Версия клиента не найдена")

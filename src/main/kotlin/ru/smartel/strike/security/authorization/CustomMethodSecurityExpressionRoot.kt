@@ -5,6 +5,7 @@ import org.springframework.security.access.expression.method.MethodSecurityExpre
 import org.springframework.security.core.Authentication
 import ru.smartel.strike.repository.event.EventRepository
 import ru.smartel.strike.repository.news.NewsRepository
+import ru.smartel.strike.security.token.UserPrincipal
 
 class CustomMethodSecurityExpressionRoot(
     authentication: Authentication,
@@ -19,21 +20,21 @@ class CustomMethodSecurityExpressionRoot(
         @JvmName("_getReturnObject") get
         @JvmName("_getReturnObject") set
 
-//    fun isEventAuthor(eventId: Long?): Boolean {
-//        return if (principal !is UserPrincipal) false else eventRepository.findById(eventId)
-//            .map(PostEntity::getAuthor)
-//            .map(User::getId)
-//            .map { authorId -> authorId.equals((principal as UserPrincipal).getId()) }
-//            .orElse(java.lang.Boolean.FALSE)
-//    }
-//
-//    fun isNewsAuthor(newsId: Long?): Boolean {
-//        return if (principal !is UserPrincipal) false else newsRepository.findById(newsId)
-//            .map(PostEntity::getAuthor)
-//            .map(User::getId)
-//            .map { authorId -> authorId.equals((principal as UserPrincipal).getId()) }
-//            .orElse(java.lang.Boolean.FALSE)
-//    }
+    fun isEventAuthor(eventId: Long): Boolean {
+        return if (principal !is UserPrincipal) false else eventRepository.findById(eventId)
+            .map { it.post.author }
+            .map { it.id }
+            .map { authorId -> authorId.equals((principal as UserPrincipal).id) }
+            .orElse(java.lang.Boolean.FALSE)
+    }
+
+    fun isNewsAuthor(newsId: Long): Boolean {
+        return if (principal !is UserPrincipal) false else newsRepository.findById(newsId)
+            .map { it.post.author }
+            .map { it.id }
+            .map { authorId -> authorId.equals((principal as UserPrincipal).id) }
+            .orElse(java.lang.Boolean.FALSE)
+    }
 
     override fun getFilterObject() = filterObject
     override fun setFilterObject(filterObject: Any?) {

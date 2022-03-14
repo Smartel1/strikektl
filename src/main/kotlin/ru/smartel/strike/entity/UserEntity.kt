@@ -39,7 +39,7 @@ class UserEntity(
      * FCM registration token (firebase cloud messaging)
      */
     @Column(name = "fcm")
-    var fcm: String?,
+    var fcm: String? = null,
 
     @Column(name = "image_url")
     var imageUrl: String?,
@@ -57,7 +57,7 @@ class UserEntity(
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "event_id")]
     )
-    var favouriteEvents: List<EventEntity>,
+    var favouriteEvents: List<EventEntity> = mutableListOf(),
 
     @ManyToMany
     @JoinTable(
@@ -65,7 +65,7 @@ class UserEntity(
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "news_id")]
     )
-    var favouriteNews: List<NewsEntity>,
+    var favouriteNews: List<NewsEntity> = mutableListOf(),
 
     @ManyToMany
     @JoinTable(
@@ -73,9 +73,10 @@ class UserEntity(
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "conflict_id")]
     )
-    var favouriteConflicts: List<ConflictEntity>
+    var favouriteConflicts: List<ConflictEntity> = mutableListOf()
 ) {
     fun getRolesAsList(): List<String> = roles.map { it.asText() }
+
     fun setRoles(roles: List<String>) {
         this.roles = ArrayNode(JsonNodeFactory.instance, roles.map { TextNode.valueOf(it) })
     }
