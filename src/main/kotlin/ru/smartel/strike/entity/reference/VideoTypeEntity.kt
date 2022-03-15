@@ -5,4 +5,4 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "video_types")
-class VideoTypeEntity: EntityWithNames()
+class VideoTypeEntity: ReferenceWithCode()

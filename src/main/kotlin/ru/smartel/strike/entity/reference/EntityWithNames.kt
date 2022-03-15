@@ -2,10 +2,12 @@ package ru.smartel.strike.entity.reference
 
 import org.springframework.data.annotation.AccessType
 import ru.smartel.strike.entity.`interface`.HavingNames
+import ru.smartel.strike.entity.`interface`.PublicReference
+import java.util.*
 import javax.persistence.*
 
 @MappedSuperclass
-abstract class EntityWithNames : HavingNames {
+abstract class EntityWithNames : HavingNames, PublicReference {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @AccessType(AccessType.Type.PROPERTY) // in order to get id without loading whole entity from db
@@ -22,4 +24,6 @@ abstract class EntityWithNames : HavingNames {
 
     @Column(name = "name_de")
     override var nameDe: String? = null
+
+    override fun publicHash() = Objects.hash(id, nameRu, nameEn, nameEs, nameDe)
 }

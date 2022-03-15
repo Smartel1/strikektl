@@ -10,10 +10,10 @@ import org.springframework.messaging.Message
 import org.springframework.messaging.support.MessageBuilder
 import ru.smartel.strike.dto.publication.PublishDto
 import ru.smartel.strike.dto.publication.PublishDtoWithNetworks
+import ru.smartel.strike.dto.service.network.Network
 import ru.smartel.strike.service.publish.OkService
 import ru.smartel.strike.service.publish.TelegramService
 import ru.smartel.strike.service.publish.VkService
-import ru.smartel.strike.service.sort.network.Network
 
 @Configuration
 class IntegrationConfiguration {
