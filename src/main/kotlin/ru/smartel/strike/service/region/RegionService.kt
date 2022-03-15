@@ -17,7 +17,7 @@ import ru.smartel.strike.service.Locale
 class RegionService(
     private val regionRepository: RegionRepository,
     private val countryRepository: CountryRepository,
-    private val validator: RegionDtoValidator,
+    private val validator: RegionDtoValidator
 ) {
     fun list(name: String?, countryId: Int?, locale: Locale): ListWrapperDto<RegionDetailDto> {
         val regions = regionRepository.findAll(regionToCountrySpec(countryId).and(namePatternRegionSpec(name)))
