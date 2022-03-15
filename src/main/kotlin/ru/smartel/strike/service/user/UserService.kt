@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional
 import ru.smartel.strike.dto.request.user.UserUpdateRequestDto
 import ru.smartel.strike.dto.response.user.UserDetailDto
 import ru.smartel.strike.entity.UserEntity
-import ru.smartel.strike.repository.user.UserRepository
+import ru.smartel.strike.repository.etc.UserRepository
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import javax.persistence.EntityNotFoundException

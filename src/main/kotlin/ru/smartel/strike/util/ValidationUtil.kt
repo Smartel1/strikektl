@@ -5,7 +5,7 @@ import ru.smartel.strike.exception.ValidationException
 
 fun HashMap<String, ArrayList<String>>.addErrorIf(field: String, errorMessage: String, condition: () -> Boolean):
         HashMap<String, ArrayList<String>> {
-    if (!condition.invoke()) {
+    if (!condition()) {
         return this
     }
 
