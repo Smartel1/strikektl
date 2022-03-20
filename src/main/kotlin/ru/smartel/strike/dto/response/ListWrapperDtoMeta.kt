@@ -1,4 +1,4 @@
-package ru.smartel.strike.dto
+package ru.smartel.strike.dto.response
 
 import kotlin.math.ceil
 

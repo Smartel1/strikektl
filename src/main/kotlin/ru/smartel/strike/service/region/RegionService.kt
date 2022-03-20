@@ -4,7 +4,7 @@ import org.springframework.data.jpa.domain.Specification
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import ru.smartel.strike.dto.ListWrapperDto
+import ru.smartel.strike.dto.response.ListWrapperDto
 import ru.smartel.strike.dto.request.reference.region.RegionCreateRequestDto
 import ru.smartel.strike.dto.response.reference.region.RegionDetailDto
 import ru.smartel.strike.entity.reference.RegionEntity

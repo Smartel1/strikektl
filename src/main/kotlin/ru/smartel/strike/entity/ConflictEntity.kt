@@ -33,10 +33,10 @@ data class ConflictEntity(
     var left: Long?, //dont set default value. Let it fail if not set while saving entity
 
     @Column(name = "rgt", nullable = false)
-    var right: Long, //dont set default value. Let it fail if not set while saving entity
+    var right: Long?, //dont set default value. Let it fail if not set while saving entity
 
     @Column(name = "lvl", nullable = false)
-    var level: Long, //dont set default value. Let it fail if not set while saving entity
+    var level: Long?, //dont set default value. Let it fail if not set while saving entity
 
     @Column(name = "title_ru")
     override var titleRu: String?,
@@ -106,18 +106,18 @@ data class ConflictEntity(
     }
     override fun getTreeLeft() = left
     override fun setTreeLeft(value: Long?) {
-        left = value!!
+        left = value
     }
     override fun getTreeRight() = right
     override fun setTreeRight(value: Long?) {
-        right = value!!
+        right = value
     }
     override fun getTreeLevel() = level
     override fun setTreeLevel(value: Long?) {
-        level = value!!
+        level = value
     }
     override fun getParentId() = parent
     override fun setParentId(value: Long?) {
-        parent = value!!
+        parent = value
     }
 }

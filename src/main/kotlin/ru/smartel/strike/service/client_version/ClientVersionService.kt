@@ -2,7 +2,7 @@ package ru.smartel.strike.service.client_version
 
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
-import ru.smartel.strike.dto.ListWrapperDto
+import ru.smartel.strike.dto.response.ListWrapperDto
 import ru.smartel.strike.dto.request.client_version.ClientVersionCreateRequestDto
 import ru.smartel.strike.dto.request.client_version.ClientVersionGetNewRequestDto
 import ru.smartel.strike.dto.response.client_version.ClientVersionDto

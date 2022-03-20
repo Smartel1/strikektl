@@ -3,7 +3,7 @@ package ru.smartel.strike.controller
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.*
 import ru.smartel.strike.dto.DetailWrapperDto
-import ru.smartel.strike.dto.ListWrapperDto
+import ru.smartel.strike.dto.response.ListWrapperDto
 import ru.smartel.strike.dto.request.client_version.ClientVersionCreateRequestDto
 import ru.smartel.strike.dto.request.client_version.ClientVersionGetNewRequestDto
 import ru.smartel.strike.dto.response.client_version.ClientVersionDto

@@ -1,4 +1,4 @@
-package ru.smartel.strike.dto
+package ru.smartel.strike.dto.response
 
 import com.fasterxml.jackson.annotation.JsonInclude
 

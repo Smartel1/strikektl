@@ -3,7 +3,7 @@ package ru.smartel.strike.controller
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import ru.smartel.strike.dto.DetailWrapperDto
-import ru.smartel.strike.dto.ListWrapperDto
+import ru.smartel.strike.dto.response.ListWrapperDto
 import ru.smartel.strike.dto.request.country.CountryCreateRequestDto
 import ru.smartel.strike.dto.response.reference.country.CountryDetailDto
 import ru.smartel.strike.service.Locale

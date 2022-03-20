@@ -4,9 +4,8 @@ import org.springframework.data.jpa.domain.Specification
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import ru.smartel.strike.dto.ListWrapperDto
+import ru.smartel.strike.dto.response.ListWrapperDto
 import ru.smartel.strike.dto.request.country.CountryCreateRequestDto
-import ru.smartel.strike.dto.response.reference.NamesExtendableDto
 import ru.smartel.strike.dto.response.reference.country.CountryDetailDto
 import ru.smartel.strike.entity.reference.CountryEntity
 import ru.smartel.strike.repository.etc.CountryRepository
@@ -22,8 +21,8 @@ class CountryService(
         //find country using name (if name specified)
         val countries = countryRepository.findAll(namePatternCountrySpec(name))
         return ListWrapperDto(countries.asSequence()
+            .sortedWith(comparatorByName(locale))
             .map { CountryDetailDto(it, locale) }
-            .sortedWith(comparatorByName())
             .toList())
     }
 
@@ -32,10 +31,10 @@ class CountryService(
         validator.validateUpdateDTO(dto)
         return CountryEntity()
             .apply {
-               nameRu = dto.nameRu
-               nameEn = dto.nameEn
-               nameEs = dto.nameEs
-               nameDe = dto.nameDe
+                nameRu = dto.nameRu
+                nameEn = dto.nameEn
+                nameEs = dto.nameEs
+                nameDe = dto.nameDe
             }
             .also { countryRepository.save(it) }
             .let { CountryDetailDto(it, dto.locale!!) }
@@ -54,18 +53,27 @@ class CountryService(
         }
     }
 
-    private fun comparatorByName() = Comparator<NamesExtendableDto> { o1, o2 ->
-        sequenceOf(
-            o1.name to o2.name,
-            o1.nameRu to o2.nameRu,
-            o1.nameEn to o2.nameEn,
-            o1.nameEs to o2.nameEs,
-            o1.nameDe to o2.nameDe
-        )
-            .filter { it.first != null }
-            .filter { it.second != null }
-            .firstOrNull()
-            ?.let { it.first!!.compareTo(it.second!!) }
-            ?: 0
+    private fun comparatorByName(locale: Locale): Comparator<CountryEntity> = when (locale) {
+        Locale.ALL -> Comparator { o1, o2 ->
+            sequenceOf(
+                o1.nameRu to o2.nameRu,
+                o1.nameEn to o2.nameEn,
+                o1.nameEs to o2.nameEs,
+                o1.nameDe to o2.nameDe
+            )
+                .filter { it.first != null }
+                .filter { it.second != null }
+                .firstOrNull()
+                ?.let { it.first!!.compareTo(it.second!!) }
+                ?: 0
+        }
+        else -> Comparator { o1, o2 ->
+            val name1 = o1.getNameByLocale(locale)
+            val name2 = o2.getNameByLocale(locale)
+            when (name1 == null || name2 == null) {
+                true -> 0
+                else -> name1.compareTo(name2)
+            }
+        }
     }
 }

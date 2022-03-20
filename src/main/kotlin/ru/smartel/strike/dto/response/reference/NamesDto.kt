@@ -4,23 +4,23 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import ru.smartel.strike.entity.`interface`.HavingNames
 import ru.smartel.strike.service.Locale
 
-open class NamesExtendableDto(
+data class NamesDto(
     @field:JsonInclude(JsonInclude.Include.NON_NULL)
-    var name: String? = null,
+    val name: String?,
     @field:JsonInclude(JsonInclude.Include.NON_NULL)
-    var nameRu: String? = null,
+    val nameRu: String?,
     @field:JsonInclude(JsonInclude.Include.NON_NULL)
-    var nameEn: String? = null,
+    val nameEn: String?,
     @field:JsonInclude(JsonInclude.Include.NON_NULL)
-    var nameEs: String? = null,
+    val nameEs: String?,
     @field:JsonInclude(JsonInclude.Include.NON_NULL)
-    var nameDe: String? = null,
+    val nameDe: String?,
 ) {
-    fun setNamesOf(entity: HavingNames, locale: Locale) {
-        name = if (locale != Locale.ALL) entity.getNameByLocale(locale) else null
-        nameRu = if (locale == Locale.ALL) entity.nameRu else null
-        nameEn = if (locale == Locale.ALL) entity.nameEn else null
-        nameEs = if (locale == Locale.ALL) entity.nameEs else null
+    constructor(entity: HavingNames, locale: Locale) : this(
+        name = if (locale != Locale.ALL) entity.getNameByLocale(locale) else null,
+        nameRu = if (locale == Locale.ALL) entity.nameRu else null,
+        nameEn = if (locale == Locale.ALL) entity.nameEn else null,
+        nameEs = if (locale == Locale.ALL) entity.nameEs else null,
         nameDe = if (locale == Locale.ALL) entity.nameDe else null
-    }
+    )
 }
