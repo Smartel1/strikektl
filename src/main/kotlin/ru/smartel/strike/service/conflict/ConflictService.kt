@@ -9,6 +9,7 @@ import ru.smartel.strike.dto.request.conflict.ConflictListRequestDto
 import ru.smartel.strike.dto.response.ListWrapperDto
 import ru.smartel.strike.dto.response.ListWrapperDtoMeta
 import ru.smartel.strike.dto.response.TitlesDto
+import ru.smartel.strike.dto.response.conflict.ConflictDetailDto
 import ru.smartel.strike.dto.response.conflict.ConflictListDto
 import ru.smartel.strike.dto.response.conflict.FullConflictDto
 import ru.smartel.strike.dto.service.sort.ConflictSortDto
@@ -23,6 +24,7 @@ import ru.smartel.strike.repository.event.EventTypeRepository
 import ru.smartel.strike.security.token.UserPrincipal
 import ru.smartel.strike.service.ListRequestValidator
 import ru.smartel.strike.service.Locale
+import javax.persistence.EntityNotFoundException
 
 @Service
 @Transactional(rollbackFor = [Exception::class])
@@ -86,5 +88,36 @@ class ConflictService(
             .toList()
 
         return ListWrapperDto(conflictListDTOS, responseMeta)
+    }
+
+    @PreAuthorize("permitAll()")
+    fun get(conflictId: Long, locale: Locale): ConflictDetailDto {
+        return conflictRepository.findById(conflictId)
+            .map {
+                ConflictDetailDto(
+                    id = it.id,
+                    titles = TitlesDto(it, locale),
+                    fullConflictDto = FullConflictDto(it),
+                    mainTypeId = it.mainType?.id,
+                    automanagingMainType = it.automanagingMainType
+                )
+            }
+            .orElseThrow { EntityNotFoundException("Конфликт не найден") }
+    }
+
+    @PreAuthorize("isFullyAuthenticated()")
+    fun setFavourite(conflictId: Long, userId: Long, isFavourite: Boolean) {
+        val user = userRepository.findById(userId)
+            .orElseThrow { IllegalStateException("Authorization cannot pass empty user into this method") }
+        val conflict = conflictRepository.getById(conflictId)
+        val currentFavourites = user.favouriteConflicts
+        if (isFavourite) {
+            //If not in favourites - add it
+            if (!currentFavourites.contains(conflict)) {
+                currentFavourites.add(conflict)
+            }
+        } else {
+            currentFavourites.remove(conflict)
+        }
     }
 }

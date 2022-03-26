@@ -73,7 +73,7 @@ class UserEntity(
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "conflict_id")]
     )
-    var favouriteConflicts: List<ConflictEntity> = mutableListOf()
+    var favouriteConflicts: MutableList<ConflictEntity> = mutableListOf()
 ) {
     fun getRolesAsList(): List<String> = roles.map { it.asText() }
 
