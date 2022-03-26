@@ -5,15 +5,21 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import ru.smartel.strike.dto.request.BaseListRequestDto
+import ru.smartel.strike.dto.request.conflict.ConflictFieldsDto
 import ru.smartel.strike.dto.request.conflict.ConflictListRequestDto
 import ru.smartel.strike.dto.response.ListWrapperDto
 import ru.smartel.strike.dto.response.ListWrapperDtoMeta
 import ru.smartel.strike.dto.response.TitlesDto
 import ru.smartel.strike.dto.response.conflict.ConflictDetailDto
 import ru.smartel.strike.dto.response.conflict.ConflictListDto
+import ru.smartel.strike.dto.response.conflict.ConflictReportDto
 import ru.smartel.strike.dto.response.conflict.FullConflictDto
+import ru.smartel.strike.dto.response.reference.country.CountryDetailDto
+import ru.smartel.strike.dto.response.reference.locality.LocalityDto
+import ru.smartel.strike.dto.response.reference.region.RegionDto
 import ru.smartel.strike.dto.service.sort.ConflictSortDto
 import ru.smartel.strike.entity.ConflictEntity
+import ru.smartel.strike.exception.ValidationException
 import ru.smartel.strike.repository.conflict.ConflictReasonRepository
 import ru.smartel.strike.repository.conflict.ConflictRepository
 import ru.smartel.strike.repository.conflict.ConflictResultRepository
@@ -24,6 +30,11 @@ import ru.smartel.strike.repository.event.EventTypeRepository
 import ru.smartel.strike.security.token.UserPrincipal
 import ru.smartel.strike.service.ListRequestValidator
 import ru.smartel.strike.service.Locale
+import ru.smartel.strike.service.event.EventService
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset.UTC
+import java.util.*
 import javax.persistence.EntityNotFoundException
 
 @Service
@@ -37,23 +48,28 @@ class ConflictService(
     private val conflictResultRepository: ConflictResultRepository,
     private val industryRepository: IndustryRepository,
     private val eventRepository: EventRepository,
-//    private val eventService: EventService,
+    private val eventService: EventService,
     private val eventTypeRepository: EventTypeRepository,
     private val userRepository: UserRepository,
 ) {
 
     @PreAuthorize("permitAll()")
-    fun list(conflictsRequest: ConflictListRequestDto, listRequest: BaseListRequestDto, user: UserPrincipal?):
+    fun list(
+        conflictsRequest: ConflictListRequestDto,
+        listRequest: BaseListRequestDto,
+        locale: Locale,
+        user: UserPrincipal?
+    ):
             ListWrapperDto<ConflictListDto> {
-        dtoValidator.validateListQueryDTO(conflictsRequest)
+        dtoValidator.validateListRequestDto(conflictsRequest)
         listRequestValidator.validateListQueryDTO(listRequest)
 
         // Transform filters and other restrictions to Specifications
         val specification: Specification<ConflictEntity> = filtersTransformer
             .toSpecification(conflictsRequest.filters, user?.id)
             .and { root, _, cb ->
-                if (Locale.ALL != conflictsRequest.locale) {
-                    cb.isNotNull(root.get<String>("title" + conflictsRequest.locale!!.pascalCase()))
+                if (Locale.ALL != locale) {
+                    cb.isNotNull(root.get<String>("title" + locale.pascalCase()))
                 } else null
             }
 
@@ -80,7 +96,7 @@ class ConflictService(
             .map {
                 ConflictListDto(
                     id = it.id,
-                    titles = TitlesDto(it, conflictsRequest.locale!!),
+                    titles = TitlesDto(it, locale),
                     fullConflictDto = if (!conflictsRequest.brief) FullConflictDto(it)
                     else null
                 )
@@ -92,8 +108,8 @@ class ConflictService(
 
     @PreAuthorize("permitAll()")
     fun get(conflictId: Long, locale: Locale): ConflictDetailDto {
-        return conflictRepository.findById(conflictId)
-            .map {
+        return findByIdOrThrow(conflictId)
+            .let {
                 ConflictDetailDto(
                     id = it.id,
                     titles = TitlesDto(it, locale),
@@ -102,7 +118,6 @@ class ConflictService(
                     automanagingMainType = it.automanagingMainType
                 )
             }
-            .orElseThrow { EntityNotFoundException("Конфликт не найден") }
     }
 
     @PreAuthorize("isFullyAuthenticated()")
@@ -120,4 +135,167 @@ class ConflictService(
             currentFavourites.remove(conflict)
         }
     }
+
+    @PreAuthorize("isAuthenticated()")
+    fun getReportByPeriod(from: LocalDate, to: LocalDate, countriesIds: List<Long>): ConflictReportDto {
+        return ConflictReportDto(
+            conflictsBeganBeforeDateFromCount = conflictRepository.getOldConflictsCount(from, to, countriesIds),
+            countByCountries = conflictRepository.getCountByCountries(from, to, countriesIds),
+            countByDistricts = conflictRepository.getCountByDistricts(from, to, countriesIds),
+            countByRegions = conflictRepository.getCountByRegions(from, to, countriesIds),
+            specificCountByDistricts = conflictRepository.getSpecificCountByDistricts(from, to, countriesIds),
+
+            countByIndustries = conflictRepository.getCountByIndustries(from, to, countriesIds),
+            countByReasons = conflictRepository.getCountByReasons(from, to, countriesIds),
+            countByResults = conflictRepository.getCountByResults(from, to, countriesIds),
+            countByTypes = conflictRepository.getCountByTypes(from, to, countriesIds),
+
+            countByResultsByTypes = conflictRepository.getCountByResultsByTypes(from, to, countriesIds),
+            countByResultsByIndustries = conflictRepository.getCountByResultsByIndustries(from, to, countriesIds),
+            countByReasonsByIndustries = conflictRepository.getCountByReasonsByIndustries(from, to, countriesIds),
+            countByTypesByIndustries = conflictRepository.getCountPercentByTypesByIndustries(from, to, countriesIds)
+        )
+    }
+
+    @PreAuthorize("permitAll()")
+    fun getLatestLocality(conflictId: Long, locale: Locale): LocalityDto {
+        findByIdOrThrow(conflictId)
+        return eventRepository.findFirstByConflictIdAndLocalityNotNullOrderByPostDateDesc(conflictId)
+            ?.let {
+                LocalityDto(
+                    id = it.locality.id,
+                    name = it.locality.name,
+                    region = RegionDto(
+                        id = it.locality.region.id,
+                        name = it.locality.region.name,
+                        country = CountryDetailDto(
+                            entity = it.locality.region.country,
+                            locale = locale
+                        )
+                    )
+                )
+            }
+            ?: throw EntityNotFoundException("У событий запрошенного конфликта не найдено населенных пунктов")
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
+    fun create(dto: ConflictFieldsDto, locale: Locale, user: UserPrincipal?): ConflictDetailDto {
+        dtoValidator.validateConflictFieldsDtoForCreate(dto)
+        val conflict = ConflictEntity()
+        fillConflictFields(conflict, dto, locale)
+
+        val parentConflict = conflict.parentEvent?.conflict
+        conflictRepository.insertAsLastChildOf(conflict, parentConflict)
+        return ConflictDetailDto(
+            id = conflict.id,
+            titles = TitlesDto(conflict, locale),
+            fullConflictDto = FullConflictDto(conflict),
+            mainTypeId = conflict.mainType?.id,
+            automanagingMainType = conflict.automanagingMainType
+        )
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
+    fun update(id: Long, dto: ConflictFieldsDto, locale: Locale, user: UserPrincipal?): ConflictDetailDto {
+        dtoValidator.validateConflictFieldsDtoForUpdate(dto)
+
+        eventRepository.findFirstByConflictIdOrderByPostDateDesc(id)?.also { latestEvent ->
+            if (dto.dateTo?.isPresent == true && latestEvent.post.date.toEpochSecond(UTC) > dto.dateTo!!.get()) {
+                throw ValidationException(
+                    mapOf("dateTo" to listOf("конфликт не должен кончаться раньше последнего события"))
+                )
+            }
+            if (dto.dateFrom?.isPresent == true && latestEvent.post.date.toEpochSecond(UTC) < dto.dateFrom!!.get()) {
+                throw ValidationException(
+                    mapOf("dateFrom" to listOf("конфликт не должен начинаться позже первого события"))
+                )
+            }
+        }
+
+        val conflict = findByIdOrThrow(id)
+        val dateToBeforeUpdate = conflict.dateTo
+
+        fillConflictFields(conflict, dto, locale)
+
+        val parentConflict = conflict.parentEvent?.conflict
+
+        conflictRepository.insertAsLastChildOf(conflict, parentConflict)
+
+        // If dateTo going to be changed - update events' statuses
+        if (!Objects.equals(dateToBeforeUpdate, conflict.dateTo)) {
+            eventService.updateConflictsEventStatuses(conflict.id)
+        }
+
+        return ConflictDetailDto(
+            id = conflict.id,
+            titles = TitlesDto(conflict, locale),
+            fullConflictDto = FullConflictDto(conflict),
+            mainTypeId = conflict.mainType?.id,
+            automanagingMainType = conflict.automanagingMainType
+        )
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
+    fun delete(id: Long) {
+        val conflict =  findByIdOrThrow(id)
+        check(!conflictRepository.hasChildren(conflict)) {
+            "В текущей реализации нельзя удалять конфликты, у которых есть потомки"
+        }
+        conflictRepository.deleteFromTree(conflict)
+    }
+
+    private fun fillConflictFields(conflict: ConflictEntity, dto: ConflictFieldsDto, locale: Locale) {
+        //for the sake of PATCH ;)
+        dto.title?.also { conflict.setTitleByLocale(locale, dto.title?.orElse(null)) }
+        dto.titleRu?.also { conflict.titleRu = dto.titleRu?.orElse(null) }
+        dto.titleEn?.also { conflict.titleEn = dto.titleEn?.orElse(null) }
+        dto.titleEs?.also { conflict.titleEs = dto.titleEs?.orElse(null) }
+        dto.titleDe?.also { conflict.titleDe = dto.titleDe?.orElse(null) }
+        dto.latitude?.also { conflict.latitude = dto.latitude!! }
+        dto.longitude?.also { conflict.longitude = dto.longitude!! }
+        dto.companyName?.also { conflict.companyName = dto.companyName?.orElse(null) }
+        dto.dateFrom?.also {
+            conflict.dateFrom = dto.dateFrom!!
+                .map { LocalDateTime.ofEpochSecond(it, 0, UTC) }
+                .orElse(null)
+        }
+        dto.dateTo?.also {
+            conflict.dateTo = dto.dateTo!!
+                .map { LocalDateTime.ofEpochSecond(it, 0, UTC) }
+                .orElse(null)
+        }
+        dto.conflictReasonId?.also {
+            conflict.reason = dto.conflictReasonId!!
+                .map { conflictReasonRepository.getById(it) }
+                .orElse(null)
+        }
+        dto.conflictResultId?.also {
+            conflict.result = dto.conflictResultId!!
+                .map { conflictResultRepository.getById(it) }
+                .orElse(null)
+        }
+        dto.industryId?.also {
+            conflict.industry = dto.industryId!!
+                .map { industryRepository.getById(it) }
+                .orElse(null)
+        }
+        dto.parentEventId?.also {
+            conflict.parentEvent = dto.parentEventId!!
+                .map { eventRepository.getById(it) }
+                .orElse(null)
+        }
+        dto.mainTypeId?.also {
+            conflict.mainType = dto.mainTypeId!!
+                .map { eventTypeRepository.getById(it) }
+                .orElse(null)
+            // if once set main type manually, automanaging is disabling
+            conflict.automanagingMainType = false
+        }
+        dto.automanagingMainType?.also {
+            conflict.automanagingMainType = dto.automanagingMainType!!
+        }
+    }
+
+    private fun findByIdOrThrow(id: Long) = conflictRepository.findById(id)
+        .orElseThrow { EntityNotFoundException("Конфликт не найден") }
 }

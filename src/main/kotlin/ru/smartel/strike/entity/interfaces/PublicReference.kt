@@ -1,4 +1,4 @@
-package ru.smartel.strike.entity.`interface`
+package ru.smartel.strike.entity.interfaces
 
 interface PublicReference {
     /**

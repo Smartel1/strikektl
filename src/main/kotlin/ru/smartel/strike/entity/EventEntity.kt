@@ -3,7 +3,7 @@ package ru.smartel.strike.entity
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
-import ru.smartel.strike.entity.`interface`.Post
+import ru.smartel.strike.entity.interfaces.Post
 import ru.smartel.strike.entity.reference.EventStatusEntity
 import ru.smartel.strike.entity.reference.EventTypeEntity
 import ru.smartel.strike.entity.reference.LocalityEntity

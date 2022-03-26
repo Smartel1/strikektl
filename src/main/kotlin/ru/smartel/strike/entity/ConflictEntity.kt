@@ -2,7 +2,7 @@ package ru.smartel.strike.entity
 
 import org.hibernate.annotations.CreationTimestamp
 import pl.exsio.nestedj.model.NestedNode
-import ru.smartel.strike.entity.`interface`.HavingTitles
+import ru.smartel.strike.entity.interfaces.HavingTitles
 import ru.smartel.strike.entity.reference.ConflictReasonEntity
 import ru.smartel.strike.entity.reference.ConflictResultEntity
 import ru.smartel.strike.entity.reference.EventTypeEntity
@@ -27,66 +27,66 @@ data class ConflictEntity(
     var updatedAt: LocalDateTime? = null,
 
     @Column(name = "parent_id")
-    var parent: Long?,
+    var parent: Long? = null,
 
     @Column(name = "lft", nullable = false)
-    var left: Long?, //dont set default value. Let it fail if not set while saving entity
+    var left: Long? = null, //dont set default value. Let it fail if not set while saving entity
 
     @Column(name = "rgt", nullable = false)
-    var right: Long?, //dont set default value. Let it fail if not set while saving entity
+    var right: Long? = null, //dont set default value. Let it fail if not set while saving entity
 
     @Column(name = "lvl", nullable = false)
-    var level: Long?, //dont set default value. Let it fail if not set while saving entity
+    var level: Long? = null, //dont set default value. Let it fail if not set while saving entity
 
     @Column(name = "title_ru")
-    override var titleRu: String?,
+    override var titleRu: String? = null,
 
     @Column(name = "title_en")
-    override var titleEn: String?,
+    override var titleEn: String? = null,
 
     @Column(name = "title_es")
-    override var titleEs: String?,
+    override var titleEs: String? = null,
 
     @Column(name = "title_de")
-    override var titleDe: String?,
+    override var titleDe: String? = null,
 
     @Column(name = "latitude", nullable = false)
-    var latitude: Float,
+    var latitude: Float = 0F,
 
     @Column(name = "longitude", nullable = false)
-    var longitude: Float,
+    var longitude: Float = 0F,
 
     @Size(max = 500)
     @Column(name = "company_name", length = 500)
-    var companyName: String?,
+    var companyName: String? = null,
 
     @Column(name = "date_from")
-    var dateFrom: LocalDateTime?,
+    var dateFrom: LocalDateTime? = null,
 
     @Column(name = "date_to")
-    var dateTo: LocalDateTime?,
+    var dateTo: LocalDateTime? = null,
 
     @OneToMany(cascade = [CascadeType.DETACH], mappedBy = "conflict", fetch = FetchType.LAZY)
-    var events: List<EventEntity>,
+    var events: List<EventEntity> = ArrayList(),
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_event_id")
-    var parentEvent: EventEntity?,
+    var parentEvent: EventEntity? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "conflict_reason_id")
-    var reason: ConflictReasonEntity?,
+    var reason: ConflictReasonEntity? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "conflict_result_id")
-    var result: ConflictResultEntity?,
+    var result: ConflictResultEntity? = null,
 
     /**
      * Calculated field. But can be set by admin
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "main_type_id")
-    var mainType: EventTypeEntity?,
+    var mainType: EventTypeEntity? = null,
 
     /**
      * Whether automatically update mainType or not
@@ -95,7 +95,7 @@ data class ConflictEntity(
     var automanagingMainType: Boolean = true,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    var industry: IndustryEntity?,
+    var industry: IndustryEntity? = null,
 
     @ManyToMany(mappedBy = "favouriteConflicts")
     var likedUsers: Set<UserEntity> = HashSet()

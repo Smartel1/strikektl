@@ -3,7 +3,7 @@ package ru.smartel.strike.entity
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
-import ru.smartel.strike.entity.`interface`.Post
+import ru.smartel.strike.entity.interfaces.Post
 import java.time.LocalDateTime
 import javax.persistence.*
 import org.springframework.data.annotation.AccessType as AccessType1

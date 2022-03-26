@@ -1,8 +1,8 @@
 package ru.smartel.strike.entity.reference
 
 import org.springframework.data.annotation.AccessType
-import ru.smartel.strike.entity.`interface`.HavingNames
-import ru.smartel.strike.entity.`interface`.PublicReference
+import ru.smartel.strike.entity.interfaces.HavingNames
+import ru.smartel.strike.entity.interfaces.PublicReference
 import java.util.*
 import javax.persistence.*
 

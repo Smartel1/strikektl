@@ -1,4 +1,4 @@
-package ru.smartel.strike.entity.`interface`
+package ru.smartel.strike.entity.interfaces
 
 import ru.smartel.strike.service.Locale
 
@@ -18,7 +18,7 @@ interface HavingTitles {
         }
     }
 
-    fun setTitleByLocale(locale: Locale, title: String) {
+    fun setTitleByLocale(locale: Locale, title: String?) {
         when (locale) {
             Locale.RU -> titleRu = title
             Locale.EN -> titleEn = title

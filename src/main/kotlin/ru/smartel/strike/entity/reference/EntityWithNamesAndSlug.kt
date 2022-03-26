@@ -1,7 +1,7 @@
 package ru.smartel.strike.entity.reference
 
-import ru.smartel.strike.entity.`interface`.HavingSlug
-import ru.smartel.strike.entity.`interface`.PublicReference
+import ru.smartel.strike.entity.interfaces.HavingSlug
+import ru.smartel.strike.entity.interfaces.PublicReference
 import java.util.*
 import javax.persistence.Column
 import javax.persistence.MappedSuperclass

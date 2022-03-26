@@ -1,7 +1,7 @@
 package ru.smartel.strike.dto.response
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import ru.smartel.strike.entity.`interface`.HavingTitles
+import ru.smartel.strike.entity.interfaces.HavingTitles
 import ru.smartel.strike.service.Locale
 
 data class TitlesDto(
