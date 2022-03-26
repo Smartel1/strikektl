@@ -2,12 +2,14 @@ package ru.smartel.strike.dto.response.conflict
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonUnwrapped
+import ru.smartel.strike.dto.response.TitlesDto
 import ru.smartel.strike.entity.ConflictEntity
-import ru.smartel.strike.service.Locale
 import java.time.ZoneOffset
 
 data class ConflictListDto(
     val id: Long,
+    @JsonUnwrapped
+    val titles: TitlesDto,
     @JsonUnwrapped
     @JsonInclude(JsonInclude.Include.NON_NULL)
     val fullConflictDto: FullConflictDto?
@@ -25,7 +27,7 @@ data class FullConflictDto(
     val parentEventId: Long?,
     val createdAt: Long?
 ) {
-    constructor(conflict: ConflictEntity, locale: Locale) : this(
+    constructor(conflict: ConflictEntity) : this(
         latitude = conflict.latitude,
         longitude = conflict.longitude,
         companyName = conflict.companyName,

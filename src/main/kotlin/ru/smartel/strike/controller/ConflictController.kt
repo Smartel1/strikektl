@@ -4,6 +4,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import ru.smartel.strike.dto.request.BaseListRequestDto
 import ru.smartel.strike.dto.response.ListWrapperDto
 import ru.smartel.strike.dto.request.conflict.ConflictListRequestDto
 import ru.smartel.strike.dto.response.conflict.ConflictListDto
@@ -17,10 +18,9 @@ class ConflictController(
 ) {
     @GetMapping
     fun index(
-        dto: ConflictListRequestDto,
+        conflictsRequest: ConflictListRequestDto, listRequest: BaseListRequestDto,
         @AuthenticationPrincipal user: UserPrincipal,
     ): ListWrapperDto<ConflictListDto> {
-        dto.user = user
-        return conflictService.list(dto)
+        return conflictService.list(conflictsRequest, listRequest, user)
     }
 }

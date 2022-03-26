@@ -33,7 +33,7 @@ class ConflictFiltersTransformer(
         filters.industryIds?.also { result = result.and(matchIndustries(it)) }
         filters.mainTypeIds?.also { result = result.and(matchMainTypes(it)) }
         filters.ancestorsOf?.also {
-            val descendant: ConflictEntity? = conflictRepository.findById(filters.ancestorsOf).orElse(null)
+            val descendant: ConflictEntity? = conflictRepository.findById(filters.ancestorsOf!!).orElse(null)
             result = if (null == descendant) {
                 result.and(falseSpecification<ConflictEntity>())
             } else {
@@ -73,7 +73,7 @@ class ConflictFiltersTransformer(
     fun mentionText(desiredContent: String) = Specification<ConflictEntity> { root, _, cb ->
         if (desiredContent.isBlank()) return@Specification null
 
-        val desiredContentQuery = "%$desiredContent%"
+        val desiredContentQuery = "%${desiredContent.lowercase()}%"
         val join = root.join<ConflictEntity, EventEntity>("events", JoinType.LEFT)
         cb.or(
             cb.like(cb.lower(root.get("titleRu")), desiredContentQuery),

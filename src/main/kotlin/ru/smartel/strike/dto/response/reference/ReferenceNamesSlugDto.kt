@@ -1,6 +1,7 @@
 package ru.smartel.strike.dto.response.reference
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped
+import ru.smartel.strike.dto.response.NamesDto
 import ru.smartel.strike.entity.reference.EntityWithNamesAndSlug
 import ru.smartel.strike.service.Locale
 
