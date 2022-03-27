@@ -6,9 +6,9 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import ru.smartel.strike.entity.EventEntity
 
 interface EventRepository : JpaSpecificationExecutor<EventEntity>,
-    JpaRepository<EventEntity, Long> {
+    JpaRepository<EventEntity, Long>, CustomEventRepository {
     @EntityGraph(attributePaths = ["videos", "photos", "tags", "conflict"])
-    override fun findAllById(ids: Iterable<Long?>): List<EventEntity>
+    override fun findAllById(ids: Iterable<Long>): List<EventEntity>
 
     fun findAllByConflictId(conflictId: Long): List<EventEntity>
 

@@ -6,9 +6,9 @@ import ru.smartel.strike.util.*
 
 @Component
 class ListRequestValidator {
-    fun validateListQueryDTO(dto: BaseListRequestDto) {
-        val availableSortFields = listOf("createdAt")
-        val availableSortOrders = listOf("asc", "desc")
+    fun validateListQueryDTO(dto: BaseListRequestDto,
+                             availableSortFields: List<String> = listOf("createdAt"),
+                             availableSortOrders: List<String> = listOf("asc", "desc")) {
         HashMap<String, ArrayList<String>>()
             .addErrorIf("page", min(1)) { dto.page < 1 }
             .addErrorIf("perPage", min(1)) { dto.perPage < 1 }

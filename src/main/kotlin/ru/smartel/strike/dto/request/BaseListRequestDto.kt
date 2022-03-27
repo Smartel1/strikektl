@@ -6,16 +6,16 @@ private const val DEFAULT_PAGE_CAPACITY = 20
 private const val DEFAULT_PAGE = 1
 
 open class BaseListRequestDto(
-    @ApiParam(value = "Количество элементов на странице ответа (неменьше 1)")
-    val perPage: Int = DEFAULT_PAGE_CAPACITY,
-    @ApiParam(value = "Номер страницы ответа (неменьше 1)")
-    val page: Int = DEFAULT_PAGE,
-    val sort: Sort?
+    @field:ApiParam(value = "Количество элементов на странице ответа (неменьше 1)")
+    var perPage: Int = DEFAULT_PAGE_CAPACITY,
+    @field:ApiParam(value = "Номер страницы ответа (неменьше 1)")
+    var page: Int = DEFAULT_PAGE,
+    var sort: Sort?
 )
 
 data class Sort(
-    @ApiParam(value = "Поле для сортировки (для конфликтов доступно: createdAt, для новостей и событий: createdAt, date, views)")
-    var field: String?,
-    @ApiParam(value = "Порядок сортировки", allowableValues = "desc, asc")
-    val order: String?
+    @field:ApiParam(value = "Поле для сортировки (для конфликтов доступно: createdAt, для новостей и событий: createdAt, date, views)")
+    var field: String? = null,
+    @field:ApiParam(value = "Порядок сортировки", allowableValues = "desc, asc")
+    var order: String? = null
 )

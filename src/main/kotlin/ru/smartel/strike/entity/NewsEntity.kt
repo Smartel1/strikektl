@@ -37,7 +37,7 @@ class NewsEntity(
         inverseJoinColumns = [JoinColumn(name = "photo_id", referencedColumnName = "id")]
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
-    var photos: Set<PhotoEntity> = HashSet(),
+    override var photos: Set<PhotoEntity> = HashSet(),
 
     @ManyToMany(cascade = [CascadeType.REMOVE, CascadeType.PERSIST])
     @JoinTable(
@@ -46,7 +46,7 @@ class NewsEntity(
         inverseJoinColumns = [JoinColumn(name = "video_id", referencedColumnName = "id")]
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
-    var videos: Set<VideoEntity> = HashSet(),
+    override var videos: Set<VideoEntity> = HashSet(),
 
     @ManyToMany(cascade = [CascadeType.REMOVE, CascadeType.PERSIST])
     @JoinTable(
@@ -55,5 +55,5 @@ class NewsEntity(
         inverseJoinColumns = [JoinColumn(name = "video_id", referencedColumnName = "id")]
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
-    var tags: Set<TagEntity> = HashSet()
+    override var tags: Set<TagEntity> = HashSet()
 ) : Post

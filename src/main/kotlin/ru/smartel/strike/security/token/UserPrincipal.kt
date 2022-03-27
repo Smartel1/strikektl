@@ -9,9 +9,10 @@ data class UserPrincipal(
     @ApiParam(hidden = true)
     val name: String?,
     @ApiParam(hidden = true)
-    val roles: List<String>
+    val roles: List<String>,
 ) {
     companion object {
         fun from(user: UserEntity) = UserPrincipal(user.id, user.name, user.getRolesAsList())
     }
+    fun canModerate() = roles.contains("ADMIN") || roles.contains("MODERATOR")
 }

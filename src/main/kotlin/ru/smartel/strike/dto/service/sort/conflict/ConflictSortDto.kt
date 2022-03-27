@@ -1,4 +1,4 @@
-package ru.smartel.strike.dto.service.sort
+package ru.smartel.strike.dto.service.sort.conflict
 
 import ru.smartel.strike.dto.request.Sort
 import ru.smartel.strike.entity.ConflictEntity
@@ -8,8 +8,8 @@ import javax.persistence.criteria.Path
 import javax.persistence.criteria.Root
 
 class ConflictSortDto private constructor(
-    val orderField: OrderField,
-    val orderDirection: OrderDirection,
+    private val orderField: OrderField,
+    private val orderDirection: OrderDirection,
 ) {
     companion object {
         fun of(sort: Sort?): ConflictSortDto {

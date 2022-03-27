@@ -1,6 +1,9 @@
 package ru.smartel.strike.entity.interfaces
 
+import ru.smartel.strike.entity.PhotoEntity
 import ru.smartel.strike.entity.PostEntity
+import ru.smartel.strike.entity.TagEntity
+import ru.smartel.strike.entity.VideoEntity
 
 interface Post : HavingTitles, HavingContents, Identifiable {
     var post: PostEntity
@@ -29,4 +32,8 @@ interface Post : HavingTitles, HavingContents, Identifiable {
     override var contentDe: String?
         get() = post.contentDe
         set(value) {}
+
+    var photos: Set<PhotoEntity>
+    var videos: Set<VideoEntity>
+    var tags: Set<TagEntity>
 }

@@ -2,7 +2,7 @@ package ru.smartel.strike.repository.conflict
 
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Repository
-import ru.smartel.strike.dto.service.sort.ConflictSortDto
+import ru.smartel.strike.dto.service.sort.conflict.ConflictSortDto
 import ru.smartel.strike.entity.ConflictEntity
 
 @Repository

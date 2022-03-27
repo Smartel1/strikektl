@@ -46,7 +46,7 @@ class EventEntity(
         inverseJoinColumns = [JoinColumn(name = "photo_id", referencedColumnName = "id")]
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
-    var photos: Set<PhotoEntity> = HashSet(),
+    override var photos: Set<PhotoEntity> = HashSet(),
 
     @ManyToMany(cascade = [CascadeType.REMOVE, CascadeType.PERSIST])
     @JoinTable(
@@ -55,31 +55,31 @@ class EventEntity(
         inverseJoinColumns = [JoinColumn(name = "video_id", referencedColumnName = "id")]
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
-    var videos: Set<VideoEntity> = HashSet(),
+    override var videos: Set<VideoEntity> = HashSet(),
 
     @ManyToMany(cascade = [CascadeType.REMOVE, CascadeType.PERSIST])
     @JoinTable(
         name = "event_tag",
-        joinColumns = [JoinColumn(name = "tag_id", referencedColumnName = "id")],
-        inverseJoinColumns = [JoinColumn(name = "video_id", referencedColumnName = "id")]
+        joinColumns = [JoinColumn(name = "event_id", referencedColumnName = "id")],
+        inverseJoinColumns = [JoinColumn(name = "tag_id", referencedColumnName = "id")]
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
-    var tags: Set<TagEntity> = HashSet(),
+    override var tags: Set<TagEntity> = HashSet(),
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "conflict_id")
-    var conflict: ConflictEntity,
+    var conflict: ConflictEntity?,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_status_id")
     @AccessType1(AccessType1.Type.PROPERTY) // todo проверить необходимость этой аннотации
-    var status: EventStatusEntity,
+    var status: EventStatusEntity?,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_type_id")
-    var type: EventTypeEntity,
+    var type: EventTypeEntity?,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "locality_id")
-    var locality: LocalityEntity
+    var locality: LocalityEntity?
 ) : Post

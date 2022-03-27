@@ -10,5 +10,5 @@ class TagEntity(
     var id: Long = 0,
 
     @Column(name = "name")
-    var name: String?
+    var name: String
 )

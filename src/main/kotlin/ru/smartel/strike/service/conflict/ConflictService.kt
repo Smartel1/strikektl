@@ -17,7 +17,7 @@ import ru.smartel.strike.dto.response.conflict.FullConflictDto
 import ru.smartel.strike.dto.response.reference.country.CountryDetailDto
 import ru.smartel.strike.dto.response.reference.locality.LocalityDto
 import ru.smartel.strike.dto.response.reference.region.RegionDto
-import ru.smartel.strike.dto.service.sort.ConflictSortDto
+import ru.smartel.strike.dto.service.sort.conflict.ConflictSortDto
 import ru.smartel.strike.entity.ConflictEntity
 import ru.smartel.strike.exception.ValidationException
 import ru.smartel.strike.repository.conflict.ConflictReasonRepository
@@ -59,8 +59,7 @@ class ConflictService(
         listRequest: BaseListRequestDto,
         locale: Locale,
         user: UserPrincipal?
-    ):
-            ListWrapperDto<ConflictListDto> {
+    ): ListWrapperDto<ConflictListDto> {
         dtoValidator.validateListRequestDto(conflictsRequest)
         listRequestValidator.validateListQueryDTO(listRequest)
 
@@ -108,16 +107,7 @@ class ConflictService(
 
     @PreAuthorize("permitAll()")
     fun get(conflictId: Long, locale: Locale): ConflictDetailDto {
-        return findByIdOrThrow(conflictId)
-            .let {
-                ConflictDetailDto(
-                    id = it.id,
-                    titles = TitlesDto(it, locale),
-                    fullConflictDto = FullConflictDto(it),
-                    mainTypeId = it.mainType?.id,
-                    automanagingMainType = it.automanagingMainType
-                )
-            }
+        return ConflictDetailDto(findByIdOrThrow(conflictId), locale)
     }
 
     @PreAuthorize("isFullyAuthenticated()")
@@ -163,13 +153,13 @@ class ConflictService(
         return eventRepository.findFirstByConflictIdAndLocalityNotNullOrderByPostDateDesc(conflictId)
             ?.let {
                 LocalityDto(
-                    id = it.locality.id,
-                    name = it.locality.name,
+                    id = it.locality!!.id,
+                    name = it.locality!!.name,
                     region = RegionDto(
-                        id = it.locality.region.id,
-                        name = it.locality.region.name,
+                        id = it.locality!!.region.id,
+                        name = it.locality!!.region.name,
                         country = CountryDetailDto(
-                            entity = it.locality.region.country,
+                            entity = it.locality!!.region.country,
                             locale = locale
                         )
                     )
@@ -186,13 +176,7 @@ class ConflictService(
 
         val parentConflict = conflict.parentEvent?.conflict
         conflictRepository.insertAsLastChildOf(conflict, parentConflict)
-        return ConflictDetailDto(
-            id = conflict.id,
-            titles = TitlesDto(conflict, locale),
-            fullConflictDto = FullConflictDto(conflict),
-            mainTypeId = conflict.mainType?.id,
-            automanagingMainType = conflict.automanagingMainType
-        )
+        return ConflictDetailDto(conflict, locale)
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
@@ -226,18 +210,12 @@ class ConflictService(
             eventService.updateConflictsEventStatuses(conflict.id)
         }
 
-        return ConflictDetailDto(
-            id = conflict.id,
-            titles = TitlesDto(conflict, locale),
-            fullConflictDto = FullConflictDto(conflict),
-            mainTypeId = conflict.mainType?.id,
-            automanagingMainType = conflict.automanagingMainType
-        )
+        return ConflictDetailDto(conflict, locale)
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     fun delete(id: Long) {
-        val conflict =  findByIdOrThrow(id)
+        val conflict = findByIdOrThrow(id)
         check(!conflictRepository.hasChildren(conflict)) {
             "В текущей реализации нельзя удалять конфликты, у которых есть потомки"
         }
