@@ -151,20 +151,7 @@ class ConflictService(
     fun getLatestLocality(conflictId: Long, locale: Locale): LocalityDto {
         findByIdOrThrow(conflictId)
         return eventRepository.findFirstByConflictIdAndLocalityNotNullOrderByPostDateDesc(conflictId)
-            ?.let {
-                LocalityDto(
-                    id = it.locality!!.id,
-                    name = it.locality!!.name,
-                    region = RegionDto(
-                        id = it.locality!!.region.id,
-                        name = it.locality!!.region.name,
-                        country = CountryDetailDto(
-                            entity = it.locality!!.region.country,
-                            locale = locale
-                        )
-                    )
-                )
-            }
+            ?.let { LocalityDto(it.locality!!, locale) }
             ?: throw EntityNotFoundException("У событий запрошенного конфликта не найдено населенных пунктов")
     }
 

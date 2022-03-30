@@ -14,14 +14,14 @@ data class UserDetailDto(
     val favouriteNews: List<Long>?,
 ) {
     constructor(user: UserEntity) : this(
-        user.id,
-        user.name,
-        user.uid,
-        user.email,
-        user.fcm,
-        user.getRolesAsList(),
-        user.imageUrl,
-        user.favouriteEvents.map { it.id },
-        user.favouriteNews.map { it.id }
+        id = user.id,
+        name = user.name,
+        uuid = user.uid,
+        email = user.email,
+        fcm = user.fcm,
+        roles = user.getRolesAsList(),
+        imageUrl = user.imageUrl,
+        favouriteEvents = user.favouriteEvents.map { it.id },
+        favouriteNews = user.favouriteNews.map { it.id }
     )
 }

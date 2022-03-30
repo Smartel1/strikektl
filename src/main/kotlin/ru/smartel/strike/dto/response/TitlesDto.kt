@@ -23,4 +23,27 @@ data class TitlesDto(
         titleEs = if (locale == Locale.ALL) entity.titleEs else IGNORE,
         titleDe = if (locale == Locale.ALL) entity.titleDe else IGNORE
     )
+
+    companion object {
+        fun withDefaultRuLocale(entity: HavingTitles, locale: Locale): TitlesDto {
+            /**
+             * If title is not localized use default (Ru)
+             * Never contains null. Maybe its not good
+             */
+            fun getByLocaleOrRuOrEmpty(entity: HavingTitles, locale: Locale): String {
+                val byLocale = entity.getTitleByLocale(locale)
+                if (!byLocale.isNullOrBlank()) return byLocale
+                if (entity.titleRu != null) return entity.titleRu!!
+                return ""
+            }
+
+            return TitlesDto(
+                title = if (locale != Locale.ALL) getByLocaleOrRuOrEmpty(entity, locale) else IGNORE,
+                titleRu = if (locale == Locale.ALL) entity.titleRu else IGNORE,
+                titleEn = if (locale == Locale.ALL) entity.titleEn else IGNORE,
+                titleEs = if (locale == Locale.ALL) entity.titleEs else IGNORE,
+                titleDe = if (locale == Locale.ALL) entity.titleDe else IGNORE
+            )
+        }
+    }
 }

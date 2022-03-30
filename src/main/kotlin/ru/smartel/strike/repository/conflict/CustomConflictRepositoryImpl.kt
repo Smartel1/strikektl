@@ -65,7 +65,7 @@ class CustomConflictRepositoryImpl(
 
     override fun getRootConflict(conflict: ConflictEntity): ConflictEntity {
         return entityManager.createQuery(
-            "select c from ConflictEntity c where 'level' = :rootLevel and 'left' <= :lft and 'right' >= :rgt")
+            "select c from ConflictEntity c where c.level = :rootLevel and c.left <= :lft and c.right >= :rgt")
             .setParameter("rootLevel", 0L)
             .setParameter("rgt", conflict.treeRight)
             .setParameter("lft", conflict.treeLeft)
@@ -74,7 +74,7 @@ class CustomConflictRepositoryImpl(
 
     override fun getDescendantsAndSelf(conflict: ConflictEntity): List<ConflictEntity> {
         return entityManager.createQuery(
-            "select c from ConflictEntity c where 'left' >= :lft and 'right' <= :rgt")
+            "select c from ConflictEntity c where c.left >= :lft and c.right <= :rgt")
             .setParameter("rgt", conflict.treeRight)
             .setParameter("lft", conflict.treeLeft)
             .resultList as List<ConflictEntity>

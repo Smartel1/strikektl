@@ -1,5 +1,6 @@
 package ru.smartel.strike.service.event
 
+import org.springframework.security.access.prepost.PostAuthorize
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -7,8 +8,13 @@ import ru.smartel.strike.dto.request.BaseListRequestDto
 import ru.smartel.strike.dto.request.event.EventListRequestDto
 import ru.smartel.strike.dto.response.ListWrapperDto
 import ru.smartel.strike.dto.response.ListWrapperDtoMeta
+import ru.smartel.strike.dto.response.TitlesDto
+import ru.smartel.strike.dto.response.conflict.BriefConflictWithEventsDto
+import ru.smartel.strike.dto.response.event.BriefEventDto
+import ru.smartel.strike.dto.response.event.EventDetailDto
 import ru.smartel.strike.dto.response.event.EventListDto
 import ru.smartel.strike.dto.service.sort.event.EventSortDto
+import ru.smartel.strike.entity.EventEntity
 import ru.smartel.strike.entity.reference.EventStatusEntity
 import ru.smartel.strike.repository.conflict.ConflictRepository
 import ru.smartel.strike.repository.event.EventRepository
@@ -16,6 +22,9 @@ import ru.smartel.strike.repository.event.EventStatusRepository
 import ru.smartel.strike.security.token.UserPrincipal
 import ru.smartel.strike.service.ListRequestValidator
 import ru.smartel.strike.service.Locale
+import java.time.ZoneOffset
+import java.util.*
+import javax.persistence.EntityNotFoundException
 
 @Service
 @Transactional(rollbackFor = [Exception::class])
@@ -34,8 +43,10 @@ class EventService(
         locale: Locale,
         user: UserPrincipal?
     ): ListWrapperDto<EventListDto> {
-        listRequestValidator.validateListQueryDTO(listRequest,
-            availableSortFields = listOf("createdAt", "date", "views"))
+        listRequestValidator.validateListQueryDTO(
+            listRequest,
+            availableSortFields = listOf("createdAt", "date", "views")
+        )
         eventDtoValidator.validateListRequestDto(dto)
 
         val specification = eventFiltersTransformer.toSpecification(dto.filters, user?.id)
@@ -72,6 +83,63 @@ class EventService(
 
         return ListWrapperDto(eventListDTOs, responseMeta)
     }
+
+    @PreAuthorize("permitAll()")
+    @PostAuthorize("hasAnyRole('ADMIN', 'MODERATOR') or returnObject.postDetails.published")
+    fun incrementViewsAndGet(id: Long, locale: Locale, withRelatives: Boolean, user: UserPrincipal?): EventDetailDto {
+        val event = getByIdOrThrow(id)
+        event.post.views++
+        return EventDetailDto(
+            event = event,
+            locale = locale,
+            relatives = if (withRelatives) getRelatives(event, locale, user?.canModerate() == true)
+            else null
+        )
+    }
+
+    /**
+     * Get related events grouped by containing conflicts.
+     * Related means they belongs to same root conflict
+     */
+    private fun getRelatives(
+        event: EventEntity,
+        locale: Locale,
+        includeNotPublished: Boolean
+    ): List<BriefConflictWithEventsDto> {
+        val conflict = event.conflict ?: return listOf()
+
+        //get root conflict
+        val rootConflict = conflictRepository.getRootConflict(conflict)
+
+        //get all conflicts caused by root
+        val conflictsOfRoot = conflictRepository.getDescendantsAndSelf(rootConflict)
+
+        //Create list of conflict DTOs. Each containing its events list
+
+        //Create list of conflict DTOs. Each containing its events list
+        return conflictsOfRoot
+            .map { conf ->
+                BriefConflictWithEventsDto(
+                    id = conf.id,
+                    parentEventId = conf.parentEvent?.id,
+                    parentConflictId = conf.parentId,
+                    events = conf.events.asSequence()
+                        .filter { includeNotPublished || it.post.published }
+                        .map {
+                            BriefEventDto(
+                                id = it.id,
+                                date = it.post.date.toEpochSecond(ZoneOffset.UTC),
+                                titles = TitlesDto.withDefaultRuLocale(it, locale)
+                            )
+                        }
+                        .sortedWith(Comparator.comparingLong { it.date })
+                        .toList()
+                )
+            }
+    }
+
+    private fun getByIdOrThrow(id: Long) = eventRepository.findById(id)
+        .orElseThrow { EntityNotFoundException("Событие не найдено") }
 
     fun updateConflictsEventStatuses(conflictId: Long) {
         val conflict = conflictRepository.findById(conflictId)
