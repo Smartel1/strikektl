@@ -68,18 +68,18 @@ class EventEntity(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "conflict_id")
-    var conflict: ConflictEntity?,
+    var conflict: ConflictEntity,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_status_id")
     @AccessType1(AccessType1.Type.PROPERTY) // todo проверить необходимость этой аннотации
-    var status: EventStatusEntity?,
+    var status: EventStatusEntity? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_type_id")
-    var type: EventTypeEntity?,
+    var type: EventTypeEntity? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "locality_id")
-    var locality: LocalityEntity?
+    var locality: LocalityEntity? = null
 ) : Post

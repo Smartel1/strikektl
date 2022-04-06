@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.validation.annotation.Validated
 import javax.validation.Valid
 import javax.validation.constraints.NotBlank
-import javax.validation.constraints.NotNull
 
 @Configuration
 @ConfigurationProperties(prefix = "push")
@@ -14,22 +13,17 @@ class PushProperties {
     /**
      * Whether to use auth stub or not (autologin as moderator)
      */
-    @NotNull
     var enabled: Boolean = false
 
-    /**
-     * Base64-decoded service-account json credentials
-     * If not set -> messaging and authentication won`t work
-     */
     @Valid
-    var topics: String = ""
+    var topics: Topics = Topics()
 }
 
 class Topics {
     @NotBlank
     var admin: String = ""
-    var news: LocaleSet? = null
-    var events: LocaleSet? = null
+    var news: LocaleSet = LocaleSet()
+    var events: LocaleSet = LocaleSet()
 }
 
 class LocaleSet {

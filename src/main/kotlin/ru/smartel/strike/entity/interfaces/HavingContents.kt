@@ -18,7 +18,7 @@ interface HavingContents {
         }
     }
 
-    fun setContentByLocale(locale: Locale, content: String) {
+    fun setContentByLocale(locale: Locale, content: String?) {
         when (locale) {
             Locale.RU -> contentRu = content
             Locale.EN -> contentEn = content

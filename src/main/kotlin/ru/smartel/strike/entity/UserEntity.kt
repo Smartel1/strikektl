@@ -57,7 +57,7 @@ class UserEntity(
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "event_id")]
     )
-    var favouriteEvents: List<EventEntity> = mutableListOf(),
+    var favouriteEvents: MutableList<EventEntity> = mutableListOf(),
 
     @ManyToMany
     @JoinTable(
@@ -65,7 +65,7 @@ class UserEntity(
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "news_id")]
     )
-    var favouriteNews: List<NewsEntity> = mutableListOf(),
+    var favouriteNews: MutableList<NewsEntity> = mutableListOf(),
 
     @ManyToMany
     @JoinTable(
