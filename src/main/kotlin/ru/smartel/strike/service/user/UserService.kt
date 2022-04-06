@@ -24,9 +24,10 @@ class UserService(
         private val registrationMonitor = ConcurrentHashMap<String, Boolean>()
     }
 
-    fun get(userId: Long) = userRepository.findById(userId)
+    fun getByIdOrThrow(id: Long): UserEntity = userRepository.findById(id)
         .orElseThrow { EntityNotFoundException("Пользователь не найден") }
-        .let { UserDetailDto(it) }
+
+    fun get(userId: Long) = UserDetailDto(getByIdOrThrow(userId))
 
     fun get(uid: String) = userRepository.findFirstByUid(uid)
 
@@ -34,8 +35,7 @@ class UserService(
     fun updateOrCreate(dto: UserUpdateRequestDto): UserDetailDto {
         validator.validateUpdateDTO(dto)
 
-        val user = userRepository.findById(dto.userId!!)
-            .orElseThrow { EntityNotFoundException("Пользователь не найден") }
+        val user = getByIdOrThrow(dto.userId!!)
 
         dto.fcm?.also { user.fcm = it }
         dto.roles?.also { user.setRoles(it) }

@@ -44,25 +44,25 @@ class ConflictDtoValidator {
     private fun validateMandatoryFields(dto: ConflictFieldsDto): HashMap<String, ArrayList<String>> {
         return HashMap<String, ArrayList<String>>()
             .addErrorIf("title", max(255)) {
-                dto.title?.takeIf { it.isPresent }.let { it!!.get().length > 255 }
+                dto.title?.takeIf { it.isPresent }?.let { it!!.get().length > 255 } == true
             }
             .addErrorIf("titleRu", max(255)) {
-                dto.titleRu?.takeIf { it.isPresent }.let { it!!.get().length > 255 }
+                dto.titleRu?.takeIf { it.isPresent }?.let { it!!.get().length > 255 } == true
             }
             .addErrorIf("titleEn", max(255)) {
-                dto.titleEn?.takeIf { it.isPresent }.let { it!!.get().length > 255 }
+                dto.titleEn?.takeIf { it.isPresent }?.let { it!!.get().length > 255 } == true
             }
             .addErrorIf("titleEs", max(255)) {
-                dto.titleEs?.takeIf { it.isPresent }.let { it!!.get().length > 255 }
+                dto.titleEs?.takeIf { it.isPresent }?.let { it!!.get().length > 255 } == true
             }
             .addErrorIf("titleDe", max(255)) {
-                dto.titleDe?.takeIf { it.isPresent }.let { it!!.get().length > 255 }
+                dto.titleDe?.takeIf { it.isPresent }?.let { it!!.get().length > 255 } == true
             }
             .addErrorIf("companyName", min(3)) {
-                dto.companyName?.takeIf { it.isPresent }.let { it!!.get().length < 3 }
+                dto.companyName?.takeIf { it.isPresent }?.let { it!!.get().length < 3 } == true
             }
             .addErrorIf("companyName", max(500)) {
-                dto.companyName?.takeIf { it.isPresent }.let { it!!.get().length > 500 }
+                dto.companyName?.takeIf { it.isPresent }?.let { it!!.get().length > 500 } == true
             }
     }
 }

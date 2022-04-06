@@ -21,11 +21,11 @@ data class EventListDto(
     constructor(event: EventEntity, locale: Locale) : this(
         latitude = event.latitude,
         longitude = event.longitude,
-        conflictId = event.conflict!!.id,
+        conflictId = event.conflict.id,
         eventStatusId = event.status!!.id,
         eventTypeId = event.type?.id,
         createdAt = event.createdAt!!.toEpochSecond(ZoneOffset.UTC),
-        conflict = ConflictDetailDto(event.conflict!!, locale),
+        conflict = ConflictDetailDto(event.conflict, locale),
         post = PostListDto(event, locale)
     )
 }

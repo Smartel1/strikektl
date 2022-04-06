@@ -261,6 +261,6 @@ class ConflictService(
         }
     }
 
-    private fun findByIdOrThrow(id: Long) = conflictRepository.findById(id)
-        .orElseThrow { EntityNotFoundException("Конфликт не найден") }
+    public fun findByIdOrThrow(id: Long) = conflictRepository.findById(id)
+        .orElseThrow { EntityNotFoundException("Конфликт не найден") }!!
 }

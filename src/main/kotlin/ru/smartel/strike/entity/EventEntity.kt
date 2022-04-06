@@ -3,20 +3,20 @@ package ru.smartel.strike.entity
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
+import org.springframework.data.annotation.AccessType
 import ru.smartel.strike.entity.interfaces.Post
 import ru.smartel.strike.entity.reference.EventStatusEntity
 import ru.smartel.strike.entity.reference.EventTypeEntity
 import ru.smartel.strike.entity.reference.LocalityEntity
 import java.time.LocalDateTime
 import javax.persistence.*
-import org.springframework.data.annotation.AccessType as AccessType1
 
 @Entity
 @Table(name = "events")
 class EventEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @AccessType1(AccessType1.Type.PROPERTY) // in order to get id without loading whole entity from db
+    @AccessType(AccessType.Type.PROPERTY) // in order to get id without loading whole entity from db
     override var id: Long = 0,
 
     @Embedded
@@ -68,18 +68,18 @@ class EventEntity(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "conflict_id")
-    var conflict: ConflictEntity?,
+    var conflict: ConflictEntity,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_status_id")
-    @AccessType1(AccessType1.Type.PROPERTY) // todo проверить необходимость этой аннотации
-    var status: EventStatusEntity?,
+    @AccessType(AccessType.Type.PROPERTY) // todo проверить необходимость этой аннотации
+    var status: EventStatusEntity? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_type_id")
-    var type: EventTypeEntity?,
+    var type: EventTypeEntity? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "locality_id")
-    var locality: LocalityEntity?
+    var locality: LocalityEntity? = null
 ) : Post
