@@ -33,11 +33,14 @@ class ConflictDtoValidator {
             .addErrorIf("longitude", notNull()) { dto.longitude == null }
             .addErrorIf("conflictReasonId", required()) { dto.conflictReasonId == null }
             .addErrorIf("conflictReasonId", notNull()) { dto.conflictReasonId?.isEmpty ?: false }
+            .addErrorIf("conflictResultId", required()) { dto.conflictResultId == null }
+            .addErrorIf("conflictResultId", notNull()) { dto.conflictResultId?.isEmpty ?: false }
             .throwIfFail()
     }
 
     fun validateConflictFieldsDtoForUpdate(dto: ConflictFieldsDto) {
         validateMandatoryFields(dto)
+            .addErrorIf("conflictResultId", notNull()) { dto.conflictResultId?.isEmpty ?: false }
             .throwIfFail()
     }
 

@@ -22,7 +22,7 @@ data class FullConflictDto(
         dateFrom = conflict.dateFrom?.toEpochSecond(ZoneOffset.UTC),
         dateTo = conflict.dateTo?.toEpochSecond(ZoneOffset.UTC),
         conflictReasonId = conflict.reason?.id,
-        conflictResultId = conflict.result?.id,
+        conflictResultId = conflict.result!!.id,
         industryId = conflict.industry?.id,
         parentEventId = conflict.parentEvent?.id,
         createdAt = conflict.createdAt?.toEpochSecond(ZoneOffset.UTC)

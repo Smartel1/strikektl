@@ -237,7 +237,7 @@ class ConflictService(
         dto.conflictResultId?.also {
             conflict.result = dto.conflictResultId!!
                 .map { conflictResultRepository.getById(it) }
-                .orElse(null)
+                .orElseThrow()
         }
         dto.industryId?.also {
             conflict.industry = dto.industryId!!
