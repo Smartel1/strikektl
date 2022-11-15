@@ -274,10 +274,6 @@ class ReportsConflictRepositoryImpl(
                 )
             } // count of conflicts
             .toMutableList()
-        // to always return not specified count
-        if (countToResult.none { it.resultId == null }) {
-            countToResult.add(CountByResult(null, 0))
-        }
         return countToResult
     }
 
@@ -328,10 +324,6 @@ class ReportsConflictRepositoryImpl(
                 )
             } // count of conflicts)
             .toMutableList()
-        // to always return not specified count
-        if (countToResult.stream().noneMatch { it.resultId == null }) {
-            countToResult.add(CountByResult(null, 0))
-        }
         return countToResult
     }
 
